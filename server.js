@@ -1,17 +1,16 @@
-//Requires
 const express = require('express');
-const app = express();
+const favicon = require('express-favicon');
 const path = require('path');
-const chalk = require('chalk');
-const morgan = require('morgan');
-
-//Static Routes
-app.use('/dist', express.static(path.join(__dirname, 'dist')));
-app.use(morgan('dev')) // logging
-
-//Main App Route
-app.get('/', (req, res, next) => res.sendFile(path.join(__dirname, 'index.html')));
-
-//Run Server
-const port = 1337;
-app.listen(process.env.PORT || port, () => console.log(chalk.blue(`Listening intently on port ${port}`)));
+const port = process.env.PORT || 1337;
+const app = express();
+app.use(favicon(__dirname + '/build/favicon.ico'));
+// the __dirname is the current directory from where the script is running
+app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'build')));
+app.get('/ping', function (req, res) {
+ return res.send('pong');
+});
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+app.listen(port);
